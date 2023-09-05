@@ -1,5 +1,4 @@
-# Repositório: api-res  Projeto MongoDB
-
+# Projeto api-rest com MongoDb
 ## Descrição
 Este repositório contém um projeto desenvolvido pelo Professor Bruno Catão em colaboração com os alunos Hianra Alves e Luis Rodrigues. O objetivo deste projeto é demonstrar como configurar e executar um ambiente de desenvolvimento local para o MongoDB e fornecer os passos necessários para iniciar o projeto.
 
