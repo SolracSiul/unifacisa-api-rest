@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Post from "../database/schemas/Post";
+import { BadRequestError } from "../utils/api-errors";
 
 class PostController{
     async DeleteById(request: Request, response: Response) {
@@ -88,27 +89,17 @@ class PostController{
 
     async createPost(request: Request, response:Response){
         const {author, content} = request.body;
-        try {
 
-            const postExist = await Post.findOne({content});
-            if(postExist){
-                return response.status(400).json({
-                    error: "Erro",
-                    message: "Post já existente"
-                })
-            }
-            const post = await Post.create({
-                author,
-                content,
-               
-            });
-            return response.json(post);
-        } catch (error) {
-            return response.status(500).send({
-                error: "Erro ao cadastrar",
-                message: error
-            })
+        const postExist = await Post.findOne({content});
+        if(postExist){
+           throw new BadRequestError('Post já existe')
         }
+        const post = await Post.create({
+            author,
+            content,
+           
+        });
+        return response.json(post);
     }
 }
 
