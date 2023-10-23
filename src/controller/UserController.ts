@@ -1,6 +1,5 @@
 import { Request, Response } from "express"
 import User from "../database/schemas/User";
-import { BadRequestError, Unauthorized } from "../utils/api-errors";
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 require('dotenv').config()
@@ -14,7 +13,7 @@ class UserController{
 
         const userExist = await User.findOne({email});
         if(userExist){
-           throw new BadRequestError('user já existe')
+           throw new Error('user já existe')
         }
         const hashPassword = await bcrypt.hash(password, 10)
 
@@ -44,28 +43,35 @@ class UserController{
         }
     }
     async loginUser(request: Request, response: Response){
-        const {email, password} = request.body
-
-        const user = await User.findOne({email});
-
-        if(!user){
-           throw new BadRequestError('E-mail ou senha inválidos')
+        try{
+            const {email, password} = request.body
+            
+            const user = await User.findOne({email});
+    
+            if(!user){
+                throw new Error('E-mail ou senha invalidos')
+            }
+            const verifyPass = await bcrypt.compare(password, user.password);
+            if(!verifyPass){
+                throw new Error('E-mail ou senha invalidos')
+            }
+            const responseUser ={
+                id: user.id,
+                name: user.name,
+                email: user.email,
+            }
+            const token = jwt.sign({id: user.id}, process.env.JWT_PASS ?? '',{expiresIn: '3H'});
+            return response.json({
+                user: responseUser,
+                token: token
+            });
+        }catch(error){
+            return response.status(404).json({
+                error: "E-mail ou senha invalidos",
+                essage: error,})
         }
-        const verifyPass = await bcrypt.compare(password, user.password)
-        if(!verifyPass){
-            throw new BadRequestError('E-mail ou senha inválidos')
-        }
-       
-        const responseUser = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-        };
-        const token = jwt.sign({id: user.id}, process.env.JWT_PASS ?? '',{expiresIn: '3H'}) ;
-        return response.json({
-            user:responseUser,
-            token: token
-        })
+
+      
     }
     async getProfile(request: Request, response: Response){
         try {
@@ -77,9 +83,6 @@ class UserController{
                 message: error,
             })
           }
-          
-
-
     }
 
 }

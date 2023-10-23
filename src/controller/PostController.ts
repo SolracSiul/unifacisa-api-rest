@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Post from "../database/schemas/Post";
-import { BadRequestError } from "../utils/api-errors";
 
 class PostController{
     async DeleteById(request: Request, response: Response) {
@@ -92,7 +91,7 @@ class PostController{
 
         const postExist = await Post.findOne({content});
         if(postExist){
-           throw new BadRequestError('Post já existe')
+           throw new Error('Post já existe')
         }
         const post = await Post.create({
             author,

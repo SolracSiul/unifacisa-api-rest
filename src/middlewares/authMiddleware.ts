@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../database/schemas/User";
-import { BadRequestError, Unauthorized } from "../utils/api-errors";
 import jwt from 'jsonwebtoken'
 
 type JwtPayload = {
