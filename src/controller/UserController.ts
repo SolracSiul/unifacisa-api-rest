@@ -68,7 +68,7 @@ class UserController{
         }catch(error){
             return response.status(404).json({
                 error: "E-mail ou senha invalidos",
-                essage: error,})
+                message: error,})
         }
 
       

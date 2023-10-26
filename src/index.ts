@@ -1,14 +1,29 @@
 import express from 'express';
-import  mongoose from 'mongoose';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import { ApolloServer, gql } from 'apollo-server-express';
 import routes from './routes';
-const cors = require('cors')
-
+import customServer from './graphql/graphqlServer';
 const app = express();
+const port = 3001;
+
+mongoose.connect('mongodb://localhost/apipost', {})
+  .then(() => {
+    console.log('Conexão com o MongoDB estabelecida.');
+  })
+  .catch((error) => {
+    console.error('Erro ao conectar ao MongoDB: ' + error);
+  });
+
+async function startApolloServer() {
+    await customServer.start();
+    customServer.applyMiddleware({ app });
+  }
+
+startApolloServer();
 app.use(cors());
-mongoose.connect('mongodb://localhost/api');
 app.use(express.json());
 app.use(routes);
-
-app.listen(3001, () =>{
-    console.log('Server rodando')
-})
+app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
+});
