@@ -11,7 +11,7 @@ type JwtPayload = {
 class UserController{
     async createUser(request: Request, response: Response, next: NextFunction) {
         try {
-            const { name, email, password } = request.body;
+            const { name, email, password, profissao, image } = request.body;
     
             const userExist = await User.findOne({ email });
             if (userExist) {
@@ -25,11 +25,15 @@ class UserController{
                 name,
                 email,
                 password: hashPassword,
+                profissao,
+                image
             });
     
             const responseUser = {
                 name: user.name,
                 email: user.email,
+                profissao: user.profissao,
+                image: user.image,
             };
     
             return response.json(responseUser);
@@ -66,6 +70,8 @@ class UserController{
                 id: user.id,
                 name: user.name,
                 email: user.email,
+                profissao: user.profissao,
+                image: user.image
             }
             const token = jwt.sign({id: user.id}, process.env.JWT_PASS ?? '',{expiresIn: '3H'});
             return response.json({

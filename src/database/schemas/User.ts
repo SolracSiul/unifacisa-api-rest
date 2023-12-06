@@ -14,7 +14,17 @@ const User = new mongoose.Schema({
         type:String,
         required: true,
         select: true,
-    }
+    },
+    profissao:{
+        type: String,
+        required: false,
+        select:true,
+    },
+    image:{
+        type: String,
+        required: false,
+        select: true
+    },
 });
 
 
