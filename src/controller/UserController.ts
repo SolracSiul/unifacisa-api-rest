@@ -1,4 +1,5 @@
 import { Request, Response } from "express"
+import { NextFunction } from "express";
 import User from "../database/schemas/User";
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
@@ -8,27 +9,33 @@ type JwtPayload = {
     id:number
 }
 class UserController{
-    async createUser(request: Request, response:Response){
-        const {name, email, password} = request.body;
-
-        const userExist = await User.findOne({email});
-        if(userExist){
-           throw new Error('user já existe')
+    async createUser(request: Request, response: Response, next: NextFunction) {
+        try {
+            const { name, email, password } = request.body;
+    
+            const userExist = await User.findOne({ email });
+            if (userExist) {
+                console.log('temos erro mas o codigigo continua')
+                return response.status(400).json({ error: 'Usuário já existe' });
+            }
+    
+            const hashPassword = await bcrypt.hash(password, 10);
+    
+            const user = await User.create({
+                name,
+                email,
+                password: hashPassword,
+            });
+    
+            const responseUser = {
+                name: user.name,
+                email: user.email,
+            };
+    
+            return response.json(responseUser);
+        } catch (error) {
+            next(error);
         }
-        const hashPassword = await bcrypt.hash(password, 10)
-
-        //is possible use bycript here before create password user
-        const user = await User.create({
-            name,
-            email,
-            password: hashPassword,
-        });
-        const responseUser = {
-            name: user.name,
-            email: user.email,
-        };
-        
-        return response.json(responseUser);
     }
     async findAllUser(request: Request, response: Response){
         try{

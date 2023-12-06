@@ -87,18 +87,27 @@ class PostController{
     }
 
     async createPost(request: Request, response:Response){
-        const {author, content} = request.body;
+        try{
+            const {author, content} = request.body;
+    
+            const postExist = await Post.findOne({content});
+            if(postExist){
+               throw new Error('Post já existe')
+            }
+            const post = await Post.create({
+                author,
+                content,
+               
+            });
+            return response.json(post);
 
-        const postExist = await Post.findOne({content});
-        if(postExist){
-           throw new Error('Post já existe')
+        }catch(e){
+            return response.status(500).json({
+                error: "something wrong",
+                message: e,
+            })
+
         }
-        const post = await Post.create({
-            author,
-            content,
-           
-        });
-        return response.json(post);
     }
 }
 

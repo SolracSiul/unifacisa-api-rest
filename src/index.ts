@@ -4,12 +4,16 @@ import cors from 'cors';
 import { ApolloServer, gql } from 'apollo-server-express';
 import routes from './routes';
 import customServer from './graphql/graphqlServer';
+import { getIp } from 'get-my-own-ip';
+
 const app = express();
 const port = 3001;
+let ad = getIp()
 
-mongoose.connect('mongodb://localhost/apipost', {})
+mongoose.connect(`mongodb://${ad}/apipost`, {})
   .then(() => {
     console.log('Conexão com o MongoDB estabelecida.');
+    console.log('recuperei a porta', ad)
   })
   .catch((error) => {
     console.error('Erro ao conectar ao MongoDB: ' + error);
